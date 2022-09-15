@@ -16,6 +16,7 @@ export default function Home() {
   const [lotteryPot, setLotteryPot] = useState()
 
   const [lotteryPlayers, setPlayers] = useState([])
+  const [userAccount, setUserAccount] = useState({})
   const [lotteryHistory, setLotteryHistory] = useState([])
   const [lotteryId, setLotteryId] = useState();
 
@@ -35,6 +36,11 @@ export default function Home() {
     const pot = await LCContract.methods.getBalance().call() // using call() because it's a read only function
     setLotteryPot(web3.utils.fromWei(pot, 'ether'))    
   }
+
+  const getAccount = async (accounts) => {
+    console.log(`user ${accounts}`)
+    setUserAccount(accounts)
+  } 
 
   const getPlayers = async () => {
     // console.log("getPot")
@@ -127,6 +133,10 @@ export default function Home() {
         const accounts = await web3.eth.getAccounts()
         // set account 1 to react state
         setAddress(accounts[0])
+        // console.log(accounts[0]);
+        // const userAccount = setAddress(accounts[0])
+        console.log(accounts)
+        await getAccount(accounts)
 
         // create local contract copy
         const LC = lotteryContract(web3)
@@ -245,6 +255,39 @@ export default function Home() {
                     </div>
                   </div>
                 </section>
+
+                <section className="mt-5">
+                  <div className="card">
+                    <div className="card-content">
+                      <div className="content">
+                        <h2> Personal history </h2>
+                        {lotteryHistory &&
+                          lotteryHistory.length > 0 &&
+                          lotteryHistory.map((item) => {
+                            if (userAccount == item.address) {
+                              return (
+                                <div
+                                  className="history-entry mt-3"
+                                  key={item.lotteryId}
+                                >
+                                  <div> You where the winner Lottery ({item.lotteryId})  </div>
+                                  <div>
+                                    <a
+                                      href={`https://bscscan.com/address/${item.address}`}
+                                      target={"_blank"}
+                                    >
+                                      {item.address}
+                                    </a>
+                                  </div>
+                                </div>
+                              );
+                            }
+                          })}
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
                 <section className="mt-5">
                   <div className="card">
                     <div className="card-content">
@@ -272,6 +315,7 @@ export default function Home() {
                     </div>
                   </div>
                 </section>
+
                 <section className="mt-5">
                   <div className="card">
                     <div className="card-content">
