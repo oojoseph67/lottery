@@ -119,7 +119,7 @@ export default function Home() {
   }
 
   // metamask code
-  const connetWalletHandler = async () => {
+  const connectWalletHandler = async () => {
     setError('')
     setSuccess('')
     if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
@@ -129,13 +129,13 @@ export default function Home() {
         // create web3 instance
         const web3 = new Web3(window.ethereum)
         setWeb3(web3)
-        // get list of accounts 
+        // get list of accounts
         const accounts = await web3.eth.getAccounts()
         // set account 1 to react state
         setAddress(accounts[0])
         // console.log(accounts[0]);
         // const userAccount = setAddress(accounts[0])
-        console.log(accounts)
+        console.log(accounts.slice(0,6))
         await getAccount(accounts)
 
         // create local contract copy
@@ -144,13 +144,16 @@ export default function Home() {
 
         window.ethereum.on("accountsChanged", async () => {
           const accounts = await web3.eth.getAccounts();
-          // console.log(accounts[0])
+          console.log(accounts[0])
           setAddress(accounts[0]);
-        });
+        })
+
+        document.getElementById("connectButton").innerHTML = `<button className="button" disabled="true">Connected to: ${accounts.slice(0,6)} </button>`;
       } catch (err) {
         setError(err.message)
       }
     } else {
+      document.getElementById("connectButton").innerHTML = "Please Install A MetaMask"
       window.alert("Please Install Metamask or Use a wallet dapp")
     }
   };
@@ -170,9 +173,29 @@ export default function Home() {
               <h1>A Lottery</h1>
             </div>
             <div className="navbar-end">
-              <button onClick={connetWalletHandler} className="button is-link">
+              <button
+                id="connectButton"
+                onClick={connectWalletHandler}
+                className="button is-link"
+              >
                 Connect Wallet
               </button>
+              {/* {
+                account ? (<div> Connected to {account.slice(0, 6)}...{account.slice(account.length - 4)}</div>) : (
+                <button
+                  id="connectButton"
+                    onClick={async () => {
+                    await enableWeb3()
+                    if (typeof window !== "undefined") {
+                      window.localStorage.setItem("connected", "injected");
+                    }
+                  }}
+                  disabled={isWeb3EnableLoading}
+                className="button is-link"
+              >
+                Connect N Wallet
+                </button>
+                ) */}
             </div>
           </div>
         </nav>
@@ -270,7 +293,11 @@ export default function Home() {
                                   className="history-entry mt-3"
                                   key={item.lotteryId}
                                 >
-                                  <div> You where the winner Lottery ({item.lotteryId})  </div>
+                                  <div>
+                                    {" "}
+                                    You where the winner Lottery (
+                                    {item.lotteryId}){" "}
+                                  </div>
                                   <div>
                                     <a
                                       href={`https://bscscan.com/address/${item.address}`}

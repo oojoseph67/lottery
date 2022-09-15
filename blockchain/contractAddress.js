@@ -1,0 +1,1 @@
+const lotteryAddress = "0x5165Dc3d2A37d7Ffd598569C9EB94A5885Deb8A4";
